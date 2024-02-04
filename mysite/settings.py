@@ -82,11 +82,11 @@ WSGI_APPLICATION = 'mysite.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': os.getenv("PGDATABASE"),
-        'USER': os.getenv("PGUSER"),
-        'PASSWORD': os.getenv("PGPASSWORD"),
-        'HOST': os.getenv("PGHOST"),
-        'PORT': os.getenv("PGPORT"),
+        'NAME': 'railway',
+        'USER': 'postgres',
+        'PASSWORD': '*-Abfeafeca1GBGDd1d1DDGGBCe3d4fD',
+        'HOST': 'viaduct.proxy.rlwy.net',
+        'PORT': '34533',
     }
 }
 
@@ -136,3 +136,5 @@ MEDIA_ROOT = BASE_DIR / 'media'
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+LOGIN_REDIRECT_URL = '/'
