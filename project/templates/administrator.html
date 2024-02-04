@@ -1,0 +1,105 @@
+{% extends 'head.html' %}
+{% load static %}
+
+{% block nav_block %}
+<li class="nav-item dropdown">
+    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+      Продукция
+    </a>
+    <ul class="dropdown-menu">
+      {% if user.is_authenticated %}
+        {% for category in categories %}
+          <li><a class="dropdown-item" href="{% url 'product_list' category.id %}">{{ category.name }}</a></li>
+        {% endfor %}
+      {% else %}
+        {% for category in categories %}
+        <li><a class="dropdown-item" href="{% url 'login' %}">{{ category.name }}</a></li>
+        {% endfor %}
+      {% endif %}
+    </ul>
+  </li>
+  
+  <li class="nav-item">
+      <a class="nav-link" href="#"></a>
+  </li>
+  {% if user.is_authenticated %}
+    <!-- Если пользователь авторизован -->
+    {% if user.is_active and user.is_staff %}
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Панель управления
+        </a>
+        <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="{% url 'add_product' %}">Препараты</a></li>
+              <li><a class="dropdown-item" href="{% url 'add_category' %}">Категории</a></li>
+              <li><a class="dropdown-item" href="{% url 'add_producer' %}">Производители</a></li>
+              <li><a class="dropdown-item" href="{% url 'add_advert' %}">Реклама</a></li>
+        </ul>
+      </li>
+
+      <li class="nav-item">
+        <a class="nav-link" href="{% url 'admin_orders' %}">Обработка заявок</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{% url 'administrator' %}">{{ user.username }}</a>
+      </li>
+    {% elif user.is_active %}
+      <li class="nav-item">
+        <a class="nav-link" href="{% url 'active' %}">{{ user.username }}</a>
+      </li>
+    {% endif %}
+    <li class="nav-item">
+      <a class="nav-link" href="{% url 'logout' %}">Выйти</a>
+    </li>
+  {% else %}
+    <!-- Если пользователь не авторизован -->
+    <li class="nav-item">
+      <a class="nav-link" href="{% url 'login' %}">Войти</a>
+    </li>
+  {% endif %}
+{% endblock %}
+
+{% block content %}
+
+<div class="container mt-4">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item">Административная панель</li>
+      <li class="breadcrumb-item">{{user.username}}</li>
+      <li class="breadcrumb-item active" aria-current="page">Панель статистики</li>
+    </ol>
+  </nav>
+  <br>
+  <h2 class="mb-4">Статистика онлайн аптеки</h2>
+  <br>
+  <div class="row">
+    {% for category in categories_stats %}
+      <div class="col-md-4">
+        <div class="card text-bg-primary mb-4">
+          <div class="card-body">
+            <h5 class="card-title">
+              <i class="bi bi-shop"></i> {{ category.name }}
+            </h5>
+            <p class="card-text">
+              <i class="bi bi-box"></i> Количество товаров: {{ category.product_count }}
+            </p>
+            <p class="card-text">
+              <i class="bi bi-currency-dollar"></i> Самый дорогой товар: {{ category.max_price }} ₸
+            </p>
+            <p class="card-text">
+              <i class="bi bi-currency-euro"></i> Самый дешевый товар: {{ category.min_price }} ₸
+            </p>
+            <p class="card-text">
+              <i class="bi bi-chat-left"></i> Количество отзывов: {{ category.review_count }}
+            </p>
+            <p class="card-text">
+              <i class="bi bi-star"></i> Средняя оценка: {{ category.avg_stars|floatformat:1 }}/5
+            </p>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+
+{% endblock %}

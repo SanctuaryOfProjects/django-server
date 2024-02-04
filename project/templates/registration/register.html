@@ -1,0 +1,51 @@
+{% extends 'head.html' %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+      <form method="post" action="{% url 'register' %}" class="col-md-6">
+        {% csrf_token %}
+        <br>
+        <br>
+        <h3 class="text-center">Регистрация</h3>
+        <br>
+        <div class="mb-3">
+          <label for="id_username" class="form-label">Логин</label>
+          <input type="text" name="username" class="form-control" id="id_username" placeholder="Введите ваш логин" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="id_last_name" class="form-label">Фамилия</label>
+            <input type="text" name="last_name" class="form-control" id="id_last_name" placeholder="Введите фамилию" required>
+          </div>
+        
+        <div class="mb-3">
+            <label for="id_first_name" class="form-label">Имя</label>
+            <input type="text" name="first_name" class="form-control" id="id_first_name" placeholder="Введите имя" required>
+        </div>
+  
+        <div class="mb-3">
+          <label for="id_email" class="form-label">Email</label>
+          <input type="email" name="email" class="form-control" id="id_email" placeholder="Введите ваш email" required>
+        </div>
+  
+        <div class="mb-3">
+          <label for="id_password1" class="form-label">Пароль</label>
+          <input type="password" name="password1" class="form-control" id="id_password1" placeholder="Введите ваш пароль" required>
+        </div>
+  
+        <div class="mb-3">
+          <label for="id_password2" class="form-label">Повторите пароль</label>
+          <input type="password" name="password2" class="form-control" id="id_password2" placeholder="Повторите ваш пароль" required>
+        </div>
+  
+        <button type="submit" class="btn btn-dark">Зарегистрироваться</button>
+        <input type="hidden" name="next" value="{{ next }}" />
+        <br>
+        <br>
+        <p><a href="{% url 'login' %}">Уже есть аккаунт? Войти</a></p>
+      </form>
+    </div>
+  </div>
+
+  {% endblock%}

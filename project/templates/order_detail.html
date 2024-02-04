@@ -1,0 +1,125 @@
+{% extends 'head.html' %}
+{% load static %}
+
+{% block nav_block %}
+<li class="nav-item dropdown">
+    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+      Продукция
+    </a>
+    <ul class="dropdown-menu">
+      {% if user.is_authenticated %}
+        {% for category in categories %}
+          <li><a class="dropdown-item" href="{% url 'product_list' category.id %}">{{ category.name }}</a></li>
+        {% endfor %}
+      {% else %}
+        {% for category in categories %}
+        <li><a class="dropdown-item" href="{% url 'login' %}">{{ category.name }}</a></li>
+        {% endfor %}
+      {% endif %}
+    </ul>
+  </li>
+  
+  <li class="nav-item">
+      <a class="nav-link" href="#"></a>
+  </li>
+  {% if user.is_authenticated %}
+    <!-- Если пользователь авторизован -->
+    {% if user.is_active and user.is_staff %}
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Панель управления
+        </a>
+        <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="{% url 'add_product' %}">Препараты</a></li>
+              <li><a class="dropdown-item" href="{% url 'add_category' %}">Категории</a></li>
+              <li><a class="dropdown-item" href="{% url 'add_producer' %}">Производители</a></li>
+              <li><a class="dropdown-item" href="{% url 'add_advert' %}">Реклама</a></li>
+        </ul>
+      </li>
+
+      <li class="nav-item">
+        <a class="nav-link" href="{% url 'admin_orders' %}">Обработка заявок</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{% url 'administrator' %}">{{ user.username }}</a>
+      </li>
+    {% elif user.is_active %}
+      <li class="nav-item">
+        <a class="nav-link" href="{% url 'active' %}">{{ user.username }}</a>
+      </li>
+    {% endif %}
+    <li class="nav-item">
+      <a class="nav-link" href="{% url 'logout' %}">Выйти</a>
+    </li>
+  {% else %}
+    <!-- Если пользователь не авторизован -->
+    <li class="nav-item">
+      <a class="nav-link" href="{% url 'login' %}">Войти</a>
+    </li>
+  {% endif %}
+{% endblock %}
+
+{% block content %}
+<br>
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item">Препараты</li>
+    <li class="breadcrumb-item">Заказ</li>
+    <li class="breadcrumb-item">{{order.id}}</li>
+  </ol>
+</nav>
+
+<h2 class="mb-4">Детали заказа №{{ order.id }}</h1>
+    
+    <p>Дата создания: {{ order.date_created|date:"d/m/Y" }}</p>
+    <p>Полное имя: {{ order.full_name }}</p>
+    <p>Email: {{ order.email }}</p>
+    <p>Адрес доставки: {{ order.delivery_address }}</p>
+    <p>Сумма: {{ order.total_price|floatformat:0 }} тг.</p>
+    <p>Комментарии: {{ order.comments }}</p>
+    <br>
+
+    <h2>Препараты в заказе:</h2>
+    <br>
+    <table class="table">
+      <thead>
+        <tr>
+          <th scope="col">Изображение</th>
+          <th scope="col">Название</th>
+          <th scope="col">Количество</th>
+          <th scope="col">Цена за шт.</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for order_product in order.orderproduct_set.all %}
+          <tr>
+            <td>
+              {% if order_product.product.photo %}
+                <img src="{{ order_product.product.photo.url }}" alt="{{ order_product.product.name }}" width="50" height="50">
+              {% else %}
+                <img src="{% static 'images/no-photo.jpg' %}" alt="{{ order_product.product.name }}" width="50" height="50">
+              {% endif %}
+            </td>
+            <td>{{ order_product.product.name }}</td>
+            <td>{{ order_product.quantity }}</td>
+            <td>{{ order_product.product.price|floatformat:0 }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+
+    <h2>Статус заказа:</h2>
+    <br>
+    <div class="row">
+      <div class="col-md-4">
+    <form method="post" action="{% url 'order_detail' order.id %}">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <br>
+        <button type="submit" class="btn btn-primary">Сохранить статус</button>
+    </form>
+    </div>
+    </div>
+    <br>
+{% endblock %}

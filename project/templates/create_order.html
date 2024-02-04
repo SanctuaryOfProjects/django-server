@@ -1,0 +1,10 @@
+{% extends 'head.html' %}
+
+{% block content %}
+  <h2>Create Order</h2>
+  <form method="post" action="{% url 'create_order' %}">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Submit Order</button>
+  </form>
+{% endblock %}

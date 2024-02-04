@@ -1,0 +1,173 @@
+{% extends 'head.html' %}
+{% load static %}
+
+{% block nav_block %}
+
+<li class="nav-item dropdown">
+    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+      Продукция
+    </a>
+    <ul class="dropdown-menu">
+      {% if user.is_authenticated %}
+        {% for category in categories %}
+          <li><a class="dropdown-item" href="{% url 'product_list' category.id %}">{{ category.name }}</a></li>
+        {% endfor %}
+      {% else %}
+        {% for category in categories %}
+        <li><a class="dropdown-item" href="{% url 'login' %}">{{ category.name }}</a></li>
+        {% endfor %}
+      {% endif %}
+    </ul>
+  </li>
+{% if user.is_authenticated %}
+  <!-- Если пользователь авторизован -->
+  {% if user.is_active and user.is_staff %}
+    <li class="nav-item">
+      <a class="nav-link" href="{% url 'administrator' %}">{{ user.username }}</a>
+    </li>
+  {% elif user.is_active %}
+  <li class="nav-item">           
+    <a class="nav-link" href="{% url 'cart' %}"><i class="bi bi-cart-plus-fill bi-5x"></i> Корзина </a>
+  </li>
+    <li class="nav-item">
+      <a class="nav-link" href="{% url 'active' %}">{{ user.username }}</a>
+    </li>
+  {% endif %}
+  <li class="nav-item">
+    <a class="nav-link" href="{% url 'logout' %}">Выйти</a>
+  </li>
+{% else %}
+  <!-- Если пользователь не авторизован -->
+  <li class="nav-item">
+    <a class="nav-link" href="{% url 'login' %}">Войти</a>
+  </li>
+{% endif %}
+
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item">Продукция</li>
+          <li class="breadcrumb-item">Категория</li>
+          <li class="breadcrumb-item">{{ product.category.name }}</li>
+          <li class="breadcrumb-item active" aria-current="page">{{ product.name }}</li>
+        </ol>
+      </nav>
+    <br>
+  <div class="row">
+    <div class="col-md-8">
+      <h1>{{ product.name }}</h1>
+      <br>
+      <br>
+      <p style="border-bottom: 2px solid rgb(43, 61, 226); margin-bottom: 10px; width: 80%;">
+        Артикул: {{ product.article }}
+      </p>
+      <p style="border-bottom: 2px solid rgb(43, 61, 226); margin-bottom: 10px; width: 80%;">
+        Производитель: {{ product.producer.name }}
+      </p>
+      <h3 class="card-text" style="border-bottom: 2px solid rgb(43, 61, 226); margin-bottom: 10px; width: 80%;">Цена: {{ product.price }} ₸</h3>
+      <br>
+      <div class="row">
+      <!-- Кнопка для заказа (пока что disable) -->
+      <form method="post" action="{% url 'add_to_cart' product.id %}" style="display: inline;">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-success"><i class="bi bi-cart-plus"></i> Заказ</button>
+      </form>
+      <!-- Кнопка добавить в избранное -->
+      <form method="post" action="{% url 'add_to_favorites' product.id %}" style="display: inline;">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger mt-3" {% if is_favorite %}disabled{% endif %}>
+          {% if is_favorite %}В избранном{% else %}<i class="bi bi-heart"></i> Добавить в избранное{% endif %}
+        </button>
+      </form>
+    </div>
+
+      </div>
+      <div class="col-md-4">
+        <!-- Фото товара -->
+        <img class="img-thumbnail" src="{{ product.photo.url }}" alt="{{ product.name }}" class="img-fluid">
+    
+      </div>
+      </div>
+
+      <h3>Описание препарата</h3>
+      <br>
+      <div class="accordion" id="accordionExample">
+        <div class="accordion-item">
+          <h2 class="accordion-header" id="headingOne">
+          </h2>
+          <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+            <div class="accordion-body">
+              <p>{{ product.description|linebreaks }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+        
+      <br>
+      <h3>Инструкция по использованию</h3>
+      <br>
+      {% if product.instruction %}
+        <a href="{{ product.instruction.url }}" download="instruction.pdf" class="btn btn-dark"><i class="bi bi-download"></i> Скачать инструкцию</a>
+        <br>
+      {% else %}
+        <p>Инструкция не доступна</p>
+      {% endif %}
+      <br>
+      <h3>Требуется рецепт</h3>
+      <br>
+      <p>{{ product.recipe_required }}</p>
+
+      <h3>Наличие на складе</h3>
+      <p>{% if product.in_stock %}Есть{% else %}Нет{% endif %}</p>
+
+
+      <!-- Отзывы -->
+  <div class="col-md-6">
+    {% if request.user.is_authenticated %}
+    <h3 class="mt-3">Оставить отзыв</h3>
+    <br>
+    <form method="post" action="{% url 'add_review' product.id %}">
+      {% csrf_token %}
+      <textarea class="form-control" name="feedback" rows="4" cols="50" placeholder="Введите ваш отзыв" required></textarea><br>
+      <label for="stars">Оценка:</label>
+      <br>
+      <br>
+      <select name="stars" required>
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+      </select>
+      <i class="bi bi-star-fill text-warning"></i>
+      <br>
+      <br>
+      <button type="submit" class="btn btn-success"><i class="bi bi-pencil-square"></i> Оставить отзыв</button>
+    </form>
+  {% endif %}
+  <br>
+  <hr>
+    <h2>Отзывы</h2>
+    <br>
+    {% for review in reviews %}
+
+      <div class="card">
+        <h5 class="card-header">{{ review.user.username }}</h5>
+        <div class="card-body">
+          <h5 class="card-title">{{ review.stars }} из 5 <i class="bi bi-star-fill text-warning"></i></h5>
+          <p class="card-text">{{ review.feedback }}</p>
+        </div>
+      </div>
+      <br>
+    {% endfor %}
+
+  </div>
+  </div>
+</div>
+<br>
+<br>
+{% endblock %}

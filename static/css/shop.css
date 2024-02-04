@@ -1,0 +1,44 @@
+body {
+    background-color: #f8f9fa;
+}
+
+.navbar-nav {
+    margin-left: auto; /* Расположение пунктов навигации вправо */
+    display: flex;
+    gap: 20px; /* Расстояние между пунктами навигации */
+    font-size: 18px; /* Размер шрифта */
+}
+
+.jumbotron {
+    background-color: #007bff;
+    color: #ffffff;
+    padding: 2rem;
+    margin-bottom: 0;
+}
+
+.featured-products {
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
+}
+
+/* Добавьте стили для других разделов по вашему выбору */
+
+/* Определение стилей для карточек товаров */
+.product-card {
+    border: 1px solid #dee2e6;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 20px;
+}
+
+.product-card img {
+    width: 100%;
+    height: auto;
+}
+
+.product-card .card-body {
+    padding: 20px;
+}

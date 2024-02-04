@@ -1,0 +1,168 @@
+{% extends 'head.html' %}
+{% load static %}
+
+{% block nav_block %}
+
+<li class="nav-item dropdown">
+  <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Продукция
+  </a>
+  <ul class="dropdown-menu">
+    {% if user.is_authenticated %}
+      {% for category in categories %}
+        <li><a class="dropdown-item" href="{% url 'product_list' category.id %}">{{ category.name }}</a></li>
+      {% endfor %}
+    {% else %}
+      {% for category in categories %}
+      <li><a class="dropdown-item" href="{% url 'login' %}">{{ category.name }}</a></li>
+      {% endfor %}
+    {% endif %}
+  </ul>
+</li>
+
+<li class="nav-item">
+    <a class="nav-link" href="#"></a>
+</li>
+{% if user.is_authenticated %}
+  <!-- Если пользователь авторизован -->
+  {% if user.is_active and user.is_staff %}
+    <li class="nav-item">
+      <a class="nav-link" href="{% url 'administrator' %}">{{ user.username }}</a>
+    </li>
+  {% elif user.is_active %}
+  <li class="nav-item">           
+    <a class="nav-link" href="{% url 'cart' %}"><i class="bi bi-cart-plus-fill bi-5x"></i> Корзина </a>
+  </li>
+    <li class="nav-item">
+      <a class="nav-link" href="{% url 'active' %}">{{ user.username }}</a>
+    </li>
+  {% endif %}
+  <li class="nav-item">
+    <a class="nav-link" href="{% url 'logout' %}">Выйти</a>
+  </li>
+{% else %}
+  <!-- Если пользователь не авторизован -->
+  <li class="nav-item">
+    <a class="nav-link" href="{% url 'login' %}">Войти</a>
+  </li>
+{% endif %}
+
+{% endblock %}
+{% block content %}
+  <div class="container mt-4">
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item">Продукция</li>
+        <li class="breadcrumb-item">Категория</li>
+        <li class="breadcrumb-item"><a href="{% url 'product_list' category.id %}">{{ category.name }}</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Поиск</li>
+      </ol>
+    </nav>
+
+    <div class="row">
+      <!-- Фильтры -->
+      <div class="col-md-4">
+        <form method="GET" action="{% url 'product_list' category.id %}">
+          <label for="manufacturer">Производитель:</label>
+          <select name="manufacturer" id="manufacturer" class="form-select">
+            <option value="">Все</option>
+            {% for manufacturer in manufacturers %}
+              <option value="{{ manufacturer.id }}">{{ manufacturer.name }}</option>
+            {% endfor %}
+          </select>
+
+          <label for="price">Цена:</label>
+          <input type="number" name="price" id="price" step="0.01" class="form-control">
+
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" name="recipe_required" id="recipe_required">
+            <label class="form-check-label" for="recipe_required">
+              Требуется рецепт
+            </label>
+          </div>
+      
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" name="in_stock" id="in_stock">
+            <label class="form-check-label" for="in_stock">
+              В наличии
+            </label>
+          </div>
+
+          <div class="mt-3">
+            <button class="btn btn-primary" type="submit"><i class="bi bi-search-heart"></i> Поиск</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="col-md-8">
+        <div class="row">
+          {% for product in products %}
+            <div class="col-md-6">
+              <div class="card mb-4">
+                <img src="{{ product.photo.url }}" class="card-img-top" alt="{{ product.name }}">
+                <div class="card-body">
+                  <h5 class="card-title">{{ product.name }}</h5>
+                  <p class="card-text"> Артикул: {{ product.article }}</p>
+                  <p class="card-text">Производитель: {{ product.producer }}</p>
+                  <p class="card-text"><strong>Цена: {{ product.price }} ₸</strong></p>
+      
+                  {% if request.user.is_authenticated %}
+                    {% if request.user.is_staff and request.user.is_active %}
+                      <a href="{% url 'product_edit' product.id %}" class="btn btn-warning">
+                        <i class="bi bi-pencil"></i> Редактировать
+                      </a>
+                      <form method="post" action="{% url 'product_delete' product.id %}" style="display: inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger">
+                          <i class="bi bi-trash"></i> Удалить
+                        </button>
+                      </form>
+                    {% else %}
+                      <a href="{% url 'product_detail' product.id %}" class="btn btn-primary">
+                        <i class="bi bi-zoom-in"></i> Подробнее
+                      </a>
+                      <form method="post" action="{% url 'add_to_favorites' product.id %}" style="display: inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger" {% if is_favorite %}disabled{% endif %}>
+                          <i class="bi bi-heart"></i>
+                          {% if is_favorite %}В избранном{% else %}В избранное{% endif %}
+                        </button>
+                      </form>
+                      <form method="post" action="{% url 'add_to_cart' product.id %}" style="display: inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-success"><i class="bi bi-cart-plus"></i> Заказ</button>
+                    </form>
+                    {% endif %}
+                  {% else %}
+                    <a href="{% url 'product_detail' product.id %}" class="btn btn-primary">
+                      <i class="bi bi-zoom-in"></i> Подробнее
+                    </a>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+
+        <div class="pagination mt-4">
+          <span class="step-links">
+              {% if products.has_previous %}
+                  <a class = "btn btn-success" href="?page=1">&laquo; Первая</a>
+                  <a class = "btn btn-success" href="?page={{ products.previous_page_number }}">Предыдущая</a>
+              {% endif %}
+  
+              <span class="current">
+                  Страница <span class="btn btn-primary">{{ products.number }}</span> из <span class="btn btn-primary">{{ products.paginator.num_pages }}</span>
+              </span>
+  
+              {% if products.has_next %}
+                  <a class = "btn btn-success" href="?page={{ products.next_page_number }}">Следующая</a>
+                  <a class = "btn btn-success" href="?page={{ products.paginator.num_pages }}">Последняя &raquo;</a>
+              {% endif %}
+          </span>
+      </div>
+      <br>
+      <br>
+      
+      </div>
+{% endblock %}

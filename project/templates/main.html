@@ -1,0 +1,181 @@
+{% extends 'head.html' %}
+{% load static %}
+
+{% block nav_block %}
+
+<li class="nav-item dropdown">
+    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+       Продукция
+    </a>
+    <ul class="dropdown-menu">
+        {% for category in categories %}
+          <li><a class="dropdown-item" href="{% url 'product_list' category.id %}">{{ category.name }}</a></li>
+        {% endfor %}
+    </ul>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="#recommendation">Рекомендации</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="#delivery">Условия доставки</a>
+  </li>
+{% if user.is_authenticated %}
+  <!-- Если пользователь авторизован -->
+  {% if user.is_active and user.is_staff %}
+    <li class="nav-item">
+      <a class="nav-link" href="{% url 'administrator' %}">{{ user.username }}</a>
+    </li>
+  {% elif user.is_active %}
+    <li class="nav-item">
+      <a class="nav-link" href="{% url 'active' %}">{{ user.username }}</a>
+    </li>
+  {% endif %}
+  <li class="nav-item">
+    <a class="nav-link" href="{% url 'logout' %}">Выйти</a>
+  </li>
+{% else %}
+  <!-- Если пользователь не авторизован -->
+  <li class="nav-item">
+    <a class="nav-link" href="{% url 'register' %}">Регистрация</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="{% url 'login' %}">Войти</a>
+  </li>
+{% endif %}
+
+{% endblock %}
+
+{% block content %}
+
+    <div class="text-center">
+        <img src="{% static 'images/bg-main.jpg' %}" alt="Your Image" class="img-fluid">
+    </div>
+    <br>
+    <div class="jumbotron text-center text-primary-emphasis bg-primary-subtle">
+        <h1 class="display-4">Добро пожаловать в онлайн-аптеку MediShop</h1>
+        <p class="lead">Здесь вы найдете все необходимые медицинские товары и препараты.</p>
+        <hr class="my-4">
+        <p>Быстрая доставка и качественное обслуживание</p>
+        <a class="btn btn-light btn-lg" href="#" role="button">Посмотреть товары</a>
+    </div>
+
+    <div class="container">
+      <div class="row">
+          <div class="col-md-12">
+            <br>
+              <h2 id="recommendation" class="text-center mb-4">Рекомендуемые предложения</h2>
+              <br>
+          </div>
+      </div>
+      <div class="row">
+          <!-- Loop through the latest_adverts -->
+          {% for advert in latest_adverts %}
+              <div class="col-md-4">
+                  <div class="product-card">
+                      <img src="{{ advert.photo.url }}" alt="{{ advert.heading }}" class="card-img-top">
+                      <div class="card-body">
+                          <h5 class="card-title">{{ advert.heading }}</h5>
+                          <br> 
+                          <p class="card-text">{{ advert.category.name }}</p>
+                          <!-- You can add more details as needed -->
+                      </div>
+                  </div>
+              </div>
+          {% endfor %}
+      </div>
+      <br>
+      <h2 id="delivery" class="text-center mb-4">Условия доставки</h2>
+
+      <style>
+        /* Добавлены стили для карточек */
+        .card {
+          border: 1px solid #ccc;
+          border-radius: 15px;
+          transition: box-shadow 0.3s ease-in-out;
+        }
+    
+        .card:hover {
+          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+      </style>
+    </head>
+    <body>
+    
+    <div class="container mt-5">
+      <div class="row row-cols-1 row-cols-md-3 g-4">
+        <!-- First Column -->
+        <div class="col mb-4">
+          <div class="card h-100">
+            <div class="card-body">
+              <h5 class="card-title"><i class="bi bi-truck fa-3x mt-3 mx-auto text-primary"></i> Бесплатная доставка</h5>
+              <p class="card-text">При заказе на сумму от 5000 тг.</p>
+            </div>
+          </div>
+        </div>
+    
+        <!-- Second Column -->
+        <div class="col mb-4">
+          <div class="card h-100">
+            <div class="card-body">
+              <h5 class="card-title"><i class="bi bi-clock fa-3x mt-3 mx-auto text-success"></i> Экспресс доставка</h5>
+              <p class="card-text">Доставка в течение 2 часов.</p>
+            </div>
+          </div>
+        </div>
+    
+        <!-- Third Column -->
+        <div class="col mb-4">
+          <div class="card h-100">
+            <div class="card-body">
+              <h5 class="card-title"><i class="bi bi-geo-alt fa-3x mt-3 mx-auto text-info"></i> Доставка в любую точку</h5>
+              <p class="card-text">Даже в отдаленные районы Караганды.</p>
+            </div>
+          </div>
+        </div>
+    
+        <!-- Fourth Column -->
+        <div class="col mb-4">
+          <div class="card h-100">
+            <div class="card-body">
+              <h5 class="card-title"><i class="bi bi-credit-card fa-3x mt-3 mx-auto text-warning"></i> Оплата картой курьеру</h5>
+              <p class="card-text">Удобный способ оплаты при получении.</p>
+            </div>
+          </div>
+        </div>
+    
+        <!-- Fifth Column -->
+        <div class="col mb-4">
+          <div class="card h-100">
+            <div class="card-body">
+              <h5 class="card-title"><i class="bi bi-clock-history fa-3x mt-3 mx-auto text-danger"></i> Доставка с 8:00</h5>
+              <p class="card-text">Заказы принимаются с 8:00 до 21:00</p>
+            </div>
+          </div>
+        </div>
+    
+        <!-- Sixth Column -->
+        <div class="col mb-4">
+          <div class="card h-100">
+            <div class="card-body">
+              <h5 class="card-title"><i class="bi bi-battery-full fa-3x mt-3 mx-auto text-info"></i> Гарантия свежести</h5>
+              <p class="card-text">Мы гарантируем качество и свежесть продукции.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+
+    
+  </div>
+  <br>
+
+    <!-- Блок с другими разделами (например, категории товаров, акции и т. д.) -->
+
+    <!-- Подвал сайта -->
+    <footer class="bg-dark text-light text-center py-3">
+        <p>&copy; 2023 Онлайн Аптека. Все права защищены.</p>
+    </footer>
+
+{% endblock %}
+

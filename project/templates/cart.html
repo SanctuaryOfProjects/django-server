@@ -1,0 +1,115 @@
+{% extends 'head.html' %}
+{% load static %}
+
+{% block nav_block %}
+<li class="nav-item dropdown">
+    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+      Продукция
+    </a>
+    <ul class="dropdown-menu">
+      {% if user.is_authenticated %}
+        {% for category in categories %}
+          <li><a class="dropdown-item" href="{% url 'product_list' category.id %}">{{ category.name }}</a></li>
+        {% endfor %}
+      {% else %}
+        {% for category in categories %}
+        <li><a class="dropdown-item" href="{% url 'login' %}">{{ category.name }}</a></li>
+        {% endfor %}
+      {% endif %}
+    </ul>
+  </li>
+  
+  <li class="nav-item">
+      <a class="nav-link" href="#"></a>
+  </li>
+  {% if user.is_authenticated %}
+  <li class="nav-item">
+    <a class="nav-link" href="{% url 'client_orders' %}">Мои заявки</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="{% url 'favorite_list' %}">Избранное</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="{% url 'review_list' %}">Мои отзывы</a>
+  </li>
+    <!-- Если пользователь авторизован -->
+    {% if user.is_active and user.is_staff %}
+      <li class="nav-item">
+        <a class="nav-link" href="{% url 'administrator' %}">{{ user.username }}</a>
+      </li>
+    {% elif user.is_active %}
+    <li class="nav-item">           
+      <a class="nav-link" href="{% url 'cart' %}"><i class="bi bi-cart-plus-fill bi-5x"></i> Корзина </a>
+    </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{% url 'active' %}">{{ user.username }}</a>
+      </li>
+    {% endif %}
+    <li class="nav-item">
+      <a class="nav-link" href="{% url 'logout' %}">Выйти</a>
+    </li>
+  {% else %}
+    <!-- Если пользователь не авторизован -->
+    <li class="nav-item">
+      <a class="nav-link" href="{% url 'login' %}">Войти</a>
+    </li>
+  {% endif %}
+{% endblock %}
+
+{% block content %}
+  <br>
+  <nav aria-label="breadcrumb">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item">Препараты</li>
+        <li class="breadcrumb-item">Корзина</li>
+      </ol>
+  </nav>
+  <h2>Корзина</h2>
+  <br>
+
+  {% if cart_products %}
+    <table class="table">
+      <thead>
+        <tr>
+          <th scope="col">Изображение</th>
+          <th scope="col">Название</th>
+          <th scope="col">Количество</th>
+          <th scope="col">Цена за шт.</th>
+          <th scope="col">Действия</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for cart_product in cart_products %}
+          <tr>
+            <td>
+              {% if cart_product.product.photo %}
+                <img src="{{ cart_product.product.photo.url }}" alt="{{ cart_product.product.name }}" width="50" height="50">
+              {% else %}
+                <img src="{% static 'images/no-photo.jpg' %}" alt="{{ cart_product.product.name }}" width="50" height="50">
+              {% endif %}
+            </td>
+            <td>{{ cart_product.product.name }}</td>
+            <td>{{ cart_product.quantity }}</td>
+            <td>{{ cart_product.product.price }}</td>
+            <td>
+              <form method="post" action="{% url 'remove_from_cart' cart_product.product.id %}" style="display: inline;">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger">Удалить</button>
+              </form>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <p>Итоговая сумма: {{ total_price }} ₸</p>
+    <br>
+
+    <a class="btn btn-success" href="{% url 'ordering' %}">Оформить заказ</a>
+  {% else %}
+    <button type="submit" class="btn btn-success" disabled>Оформить заказ</button>
+    <hr>
+    <p>Корзина пуста. Добавьте товары перед оформлением заказа.</p>
+  {% endif %}
+  <br>
+{% endblock %}

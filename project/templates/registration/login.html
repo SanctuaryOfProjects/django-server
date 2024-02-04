@@ -1,0 +1,53 @@
+{% extends 'head.html' %}
+{% load static %}
+
+{% block content %}
+
+{% if form.errors %}
+<br>
+  <p class="text-white bg-danger mb-3">Имя пользователя или пароль введены неверно. Попробуйте еще раз.</p>
+{% endif %}
+
+{% if next %}
+  {% if user.is_authenticated %}
+  <br>
+    <p class="text-white bg-danger mb-3" >у вас нет доступа к этому разделу.</p>
+  {% else %}
+  <br>
+    <p class="text-white bg-danger mb-3" >Авторизуйтесь, чтобы получить доступ к этому разделу.</p>
+  {% endif %}
+{% endif %}
+
+<div class="container">
+  <div class="row justify-content-center">
+      <form method="post" action="{% url 'login' %}" class="col-md-6">
+          {% csrf_token %}
+          <br>
+          <br>
+          <h3 class="text-center">Авторизация</h3>
+          <br>
+          <div class="mb-3">
+              <label for="id_username" class="form-label">Логин</label>
+              <input type="text" name="username" class="form-control" id="id_username" placeholder="Введите ваш логин" required>
+          </div>
+
+          <div class="mb-3">
+              <label for="id_password" class="form-label">Пароль</label>
+              <input type="password" name="password" class="form-control" id="id_password" placeholder="Введите ваш пароль" required>
+          </div>
+
+          <button type="submit" class="btn btn-dark">Войти</button>
+          <input type="hidden" name="next" value="{{ next }}" />
+          <br>
+          <br>
+          <p><a href="{% url 'register' %}">Еще нет аккаунта?</a></p>
+      </form>
+  </div>
+</div>
+
+
+
+{# Assumes you setup the password_reset view in your URLconf #}
+
+
+{% endblock %}

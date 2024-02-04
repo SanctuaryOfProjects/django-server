@@ -1,0 +1,20 @@
+{% extends 'head.html' %}
+{% load static %}
+
+{% block content %}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 text-center">
+            <img src="{% static 'images/exit.png' %}" alt="Logout Image" class="img-fluid mb-4">
+            <h2>Выход из профиля</h2>
+            <p>Вы успешно вышли из своего профиля. Надеемся увидеть вас снова!</p>
+            <a href="{% url 'main' %}" class="btn btn-primary">Главная</a>
+            <a href="{% url 'login' %}" class="btn btn-primary">Войти</a>
+        </div>
+    </div>
+</div>
+<br>
+<br>
+
+{% endblock %}
