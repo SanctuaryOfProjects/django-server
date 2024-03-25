@@ -130,8 +130,12 @@ STATIC_URL = 'static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 
-MEDIA_URL = '/uploads/'
-MEDIA_ROOT = BASE_DIR / 'uploads'
+MEDIA_URL = '/media/'
+if "RAILWAY_VOLUME_MOUNT_PATH" in os.environ:
+    MEDIA_ROOT = os.path.join(os.environ["RAILWAY_VOLUME_MOUNT_PATH"], "media")
+else:
+    # По умолчанию используем путь к медиафайлам внутри корневой директории проекта
+    MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
