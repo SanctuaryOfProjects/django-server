@@ -26,7 +26,8 @@ SECRET_KEY = 'django-insecure-rc^*w^w&6g9_(uvx#6s*bnt!w)l0rdi%!l7mv#y%uc&x%wo5pk
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ["django-server-production-98fb.up.railway.app"]
+ALLOWED_HOSTS = ["django-server-production-98fb.up.railway.app",
+                 "http://127.0.0.1:8000"]
 
 # FORM SUBMISSION
 # Comment out the following line and place your railway URL, and your production URL in the array.
@@ -35,13 +36,13 @@ CSRF_TRUSTED_ORIGINS = ["https://django-server-production-98fb.up.railway.app"]
 # Application definition
 
 INSTALLED_APPS = [
+    'project'
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    'django.contrib.staticfiles',
-    'project'
+    'django.contrib.staticfiles'
 ]
 
 MIDDLEWARE = [
